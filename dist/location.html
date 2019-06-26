@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Geolocation</title>
+
+    <style>
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>testing</h1>
+    <!-- <div id="map"></div> -->
+    <div id="output">Empty</div>
+    <!-- <script
+      async
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBOb2f_xsoEZI7VpU57ySwS2h4WJM4lsjw&callback=initMap"
+      type="text/javascript"
+    ></script> -->
+
+    <script>
+      // var map;
+      var output = document.getElementById("output");
+      // function initMap() {
+      //   console.log("init map");
+      //   map = new google.maps.Map(document.getElementById("map"), {
+      //     center: { lat: 39.145681, lng: -84.377785 },
+      //     zoom: 8,
+      //   });
+      // }
+
+      function getLocation() {
+        // if (navigator.geolocation) {
+        //   navigator.geolocation.getCurrentPosition(showPosition);
+        // } else {
+        //   console.log("Geo Location not supported by browser");
+        // }
+
+        navigator.geolocation.watchPosition(showPosition);
+      }
+      //function that retrieves the position
+      function showPosition(position) {
+        var location = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+        output.innerHTML += JSON.stringify(location) + "<br />";
+        var popup = L.popup()
+          .setLatLng([location.latitude, location.longitude])
+          .setContent("I am a standalone popup.")
+          .openOn(mymap);
+      }
+      //request for location
+      getLocation();
+    </script>
+  </body>
+</html>

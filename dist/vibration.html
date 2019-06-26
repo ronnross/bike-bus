@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Vibration api</title>
+  </head>
+  <body>
+    <button onclick="example1()">Simple vibrate</button>
+    <button onclick="example2()">Vibrate pattern</button>
+    <button onclick="example3()">Stop vibration</button>
+    <script>
+      function example1() {
+        navigator.vibrate(500);
+      }
+
+      function example2() {
+        navigator.vibrate([
+          500,
+          250,
+          500,
+          250,
+          500,
+          250,
+          500,
+          250,
+          500,
+          250,
+          500,
+        ]);
+      }
+
+      function example3() {
+        navigator.vibrate(0);
+      }
+    </script>
+  </body>
+</html>
