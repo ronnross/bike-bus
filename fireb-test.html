@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>fb-test</title>
+  </head>
+  <body>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyDsFjO3n2UQgoVpZ-JnsodhVVNB0oIS_jY",
+        authDomain: "bike-bus.firebaseapp.com",
+        databaseURL: "https://bike-bus.firebaseio.com",
+        projectId: "bike-bus",
+        storageBucket: "bike-bus.appspot.com",
+        messagingSenderId: "1090604910121",
+        appId: "1:1090604910121:web:c6d8b09244141a3a",
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      db.collection("routes")
+        .orderBy("captain")
+        .onSnapshot(snapshot => {
+          let changes = snapshot.docChanges();
+          console.log("changes", changes);
+
+          changes.forEach(change => {
+            if (change.type === "added") {
+              console.log("added");
+            } else if (change.type === "removed") {
+              console.log("removed");
+            } else {
+              console.log(change.doc.data());
+            }
+          });
+        });
+    </script>
+  </body>
+</html>
