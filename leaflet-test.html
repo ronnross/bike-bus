@@ -21,7 +21,8 @@
     <h1>Map area</h1>
     <div id="mapid"></div>
     <div id="output">Empty</div>
-    <button onclick="start()" type="button">Start</button>
+    <button onclick="start('write')" type="button">Start</button>
+    <button onclick="start('view')" type="button">View</button>
     <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
     <script
@@ -44,7 +45,7 @@
       const db = firebase.firestore();
 
       let mymap = L.map("mapid").setView([39.145681, -84.377785], 15);
-
+      let mode = "write";
       let DataModel = {
         name: "Patriots Park",
         captain: "Evelyn",
@@ -55,13 +56,18 @@
 
       const actions = {
         checkin: payload => {
-          DataModel.checkins.push(payload);
+          if (mode === "write") {
+            DataModel.checkins.push(payload);
           console.log("writing to fb");
 
           db.collection("routes")
             .doc("zjktDwgFORQR1ovfafC5")
             .set(DataModel);
           console.log("done writing to fb");
+          } else {
+            console.log('viewing')
+          }
+          
         },
         mapLocation: location => {
           const lastCheckin =
@@ -85,7 +91,8 @@
         // update("mapLocation", "");
       }
 
-      function start() {
+      function start(optionMode) {
+        mode = optionMode
         console.log("Starting application");
         navigator.geolocation.watchPosition(showPosition);
 
