@@ -22,12 +22,27 @@
     <div id="mapid"></div>
     <div id="output">Empty</div>
     <button onclick="start()" type="button">Start</button>
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
     <script
       src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
       integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
       crossorigin=""
     ></script>
     <script>
+      var firebaseConfig = {
+        apiKey: "AIzaSyDsFjO3n2UQgoVpZ-JnsodhVVNB0oIS_jY",
+        authDomain: "bike-bus.firebaseapp.com",
+        databaseURL: "https://bike-bus.firebaseio.com",
+        projectId: "bike-bus",
+        storageBucket: "bike-bus.appspot.com",
+        messagingSenderId: "1090604910121",
+        appId: "1:1090604910121:web:c6d8b09244141a3a",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
       let mymap = L.map("mapid").setView([39.145681, -84.377785], 15);
 
       let DataModel = {
@@ -41,9 +56,16 @@
       const actions = {
         checkin: payload => {
           DataModel.checkins.push(payload);
+          console.log("writing to fb");
+
+          db.collection("routes")
+            .doc("zjktDwgFORQR1ovfafC5")
+            .set(DataModel);
+          console.log("done writing to fb");
         },
-        mapLocation: _ => {
-          const lastCheckin = findLast(DataModel.checkins);
+        mapLocation: location => {
+          const lastCheckin =
+            location.length > 1 ? findLast(location) : location[0];
           console.log("lc ", lastCheckin);
           L.popup()
             .setLatLng([lastCheckin.latitude, lastCheckin.longitude])
@@ -60,7 +82,7 @@
       function showPosition(position) {
         console.log("showing position", position);
         update("checkin", mapToWaypoint(position));
-        update("mapLocation", "");
+        // update("mapLocation", "");
       }
 
       function start() {
@@ -81,6 +103,22 @@
         ).addTo(mymap);
       }
 
+      db.collection("routes")
+        .doc("zjktDwgFORQR1ovfafC5")
+        .onSnapshot(doc => {
+          // let changes = snapshot.docChanges();
+          let updates = doc.data();
+          update("mapLocation", updates.checkins);
+
+          // changes.forEach(change => {
+          //   if (change.type === "added") {
+          //     //render change.doc.data()
+          //   } else if (change.type === "removed") {
+          //     //remove
+          //   }
+          // });
+        });
+
       const mapToWaypoint = position => {
         return {
           latitude: position.coords.latitude,
@@ -88,32 +126,6 @@
           time: position.timestamp,
         };
       };
-
-      // var mymap = L.map("mapid").setView([39.145681, -84.377785], 15);
-
-      // L.tileLayer(
-      //   "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",
-      //   {
-      //     attribution:
-      //       'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      //     maxZoom: 18,
-      //     id: "mapbox.streets",
-      //     accessToken:
-      //       "pk.eyJ1Ijoicm9ubnJvc3MiLCJhIjoiY2p4YzNxaHUzMGdhNTNvb2FsNW40aWNuZCJ9.T1hDMeUKJk3Dww5LfxeqaQ",
-      //   }
-      // ).addTo(mymap);
-
-      // function showPosition(position) {
-      //   var location = {
-      //     latitude: position.coords.latitude,
-      //     longitude: position.coords.longitude,
-      //   };
-      //   output.innerHTML += JSON.stringify(location) + "<br />";
-      //   var popup = L.popup()
-      //     .setLatLng([location.latitude, location.longitude])
-      //     .setContent("You are located here.")
-      //     .openOn(mymap);
-      // }
     </script>
   </body>
 </html>
