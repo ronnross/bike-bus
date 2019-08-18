@@ -49,32 +49,45 @@
       let DataModel = {
         name: "Patriots Park",
         captain: "Evelyn",
-        checkins: [],
+        tracking: [],
+        stops: [
+          {
+            lat: 39.146121,
+            long: -84.383743,
+            riders: [],
+            checkin: false,
+          },
+          {
+            lat: 39.146024,
+            long: -84.382079,
+            riders: [],
+            checkin: false,
+          },
+        ],
       };
 
       const findLast = arr => arr[arr.length - 1];
 
       const actions = {
-        checkin: payload => {
+        tracking: payload => {
           if (mode === "write") {
-            DataModel.checkins.push(payload);
-          console.log("writing to fb");
+            DataModel.tracking.push(payload);
+            console.log("writing to fb");
 
-          db.collection("routes")
-            .doc("zjktDwgFORQR1ovfafC5")
-            .set(DataModel);
-          console.log("done writing to fb");
+            db.collection("routes")
+              .doc("zjktDwgFORQR1ovfafC5")
+              .set(DataModel);
+            console.log("done writing to fb");
           } else {
-            console.log('viewing')
+            console.log("viewing");
           }
-          
         },
         mapLocation: location => {
-          const lastCheckin =
+          const lasttracking =
             location.length > 1 ? findLast(location) : location[0];
-          console.log("lc ", lastCheckin);
+          console.log("lc ", lasttracking);
           L.popup()
-            .setLatLng([lastCheckin.latitude, lastCheckin.longitude])
+            .setLatLng([lasttracking.latitude, lasttracking.longitude])
             .setContent("Patriot Park (6)")
             .openOn(mymap);
         },
@@ -87,12 +100,12 @@
 
       function showPosition(position) {
         console.log("showing position", position);
-        update("checkin", mapToWaypoint(position));
+        update("tracking", mapToWaypoint(position));
         // update("mapLocation", "");
       }
 
       function start(optionMode) {
-        mode = optionMode
+        mode = optionMode;
         console.log("Starting application");
         navigator.geolocation.watchPosition(showPosition);
 
@@ -110,12 +123,15 @@
         ).addTo(mymap);
       }
 
+      console.log('setting marker')
+      var marker = L.marker([39.146121, -84.383743]).addTo(mymap);
+
       db.collection("routes")
         .doc("zjktDwgFORQR1ovfafC5")
         .onSnapshot(doc => {
           // let changes = snapshot.docChanges();
           let updates = doc.data();
-          update("mapLocation", updates.checkins);
+          update("mapLocation", updates.tracking);
 
           // changes.forEach(change => {
           //   if (change.type === "added") {
